@@ -98,6 +98,12 @@ export default function SiteHeader() {
                   >
                     TrackX
                   </Link>
+                  <Link
+                    href='/pages/investigation'
+                    className={'text-white/70 transition pr-3 hover:text-white'}
+                  >
+                    Investigation
+                  </Link>
                 </nav>
               </section>
             )}
@@ -170,6 +176,15 @@ export default function SiteHeader() {
                         >
                           <Feather className={'size-6'} />
                           TrackX
+                        </Link>
+                        <Link
+                          href='/pages/investigation'
+                          className={
+                            'flex items-center gap-3 text-white/70 transition hover:text-white'
+                          }
+                        >
+                          <Feather className={'size-6'} />
+                          Investigate
                         </Link>
                       </nav>
                     </div>
