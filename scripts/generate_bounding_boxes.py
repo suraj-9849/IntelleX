@@ -123,7 +123,7 @@ def process_video(video_path, output_path, json_path, frame_interval=15):
 def main():
     # Process all videos
     videos_dir = Path("public/videos")
-    json_dir = Path("public")  # Changed from earlier
+    json_dir = Path("public/bounding_boxes")  # Changed from earlier
     json_dir.mkdir(exist_ok=True)
     
     video_files = sorted(videos_dir.glob("*.mp4"))
