@@ -10,8 +10,6 @@ import {
   ValueAnimationTransition,
 } from 'framer-motion';
 import { ComponentPropsWithoutRef, useEffect, useRef, useState } from 'react';
-
-
 const tabs = [
   {
     title: 'Real-time detection of dangerous activity',
