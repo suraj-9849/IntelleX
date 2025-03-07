@@ -1,12 +1,14 @@
 'use client';
 
 import type React from 'react';
-
-import { useState, useRef } from 'react';
-import { Upload, Save } from 'lucide-react';
+import { useState, useRef, useEffect } from 'react';
+import { Upload, Save, Clock, Film, AlertTriangle, ChevronRight } from 'lucide-react';
 import { Progress } from '@/components/ui/progress';
 import { Button } from '@/components/ui/button';
 import { Input } from '@/components/ui/input';
+import { Alert, AlertDescription } from '@/components/ui/alert';
+import { Badge } from '@/components/ui/badge';
+import { Tooltip, TooltipContent, TooltipProvider, TooltipTrigger } from '@/components/ui/tooltip';
 
 import VideoPlayer from '@/components/video-player';
 import TimestampList from '@/components/timestamp-list';
@@ -29,6 +31,8 @@ export default function UploadPage() {
   const [timestamps, setTimestamps] = useState<Timestamp[]>([]);
   const [uploadProgress, setUploadProgress] = useState(0);
   const [videoName, setVideoName] = useState('');
+  const [isDragging, setIsDragging] = useState(false);
+  const [showSuccessMessage, setShowSuccessMessage] = useState(false);
   const videoRef = useRef<HTMLVideoElement>(null);
 
   const captureFrame = async (
@@ -194,43 +198,60 @@ export default function UploadPage() {
     };
     savedVideos.push(newVideo);
     localStorage.setItem('savedVideos', JSON.stringify(savedVideos));
-    alert('Video saved successfully!');
+    
+    setShowSuccessMessage(true);
+    setTimeout(() => setShowSuccessMessage(false), 3000);
   };
 
   return (
-    <div className='flex min-h-screen items-center justify-center bg-black p-4 text-white'>
-      <div className='relative w-full max-w-4xl'>
-        <div className='relative z-10 p-8'>
-          <div className='space-y-8'>
-            <div className='text-center'>
-              <h1 className='mb-2 text-3xl font-bold text-white drop-shadow-[0_0_10px_rgba(255,255,255,0.7)]'>
-                Video Timestamp Analyzer
-              </h1>
-              <p className='text-zinc-400'>
-                Upload a video to analyze key moments and generate timestamps
-              </p>
-            </div>
+    <div className="flex min-h-screen flex-col bg-gradient-to-br from-zinc-900 via-black to-zinc-900 p-4 text-white">
+      {/* Header with animated gradient */}
+      <div className="relative mx-auto mb-8 w-full max-w-5xl overflow-hidden rounded-xl bg-black p-8">
+        <div className="absolute inset-0 z-0 opacity-10">
+          <div className="absolute -inset-[10px] animate-pulse rounded-full bg-purple-600 blur-3xl"></div>
+          <div className="absolute -right-[40%] top-[30%] h-72 w-72 animate-pulse rounded-full bg-blue-500 blur-3xl"></div>
+          <div className="absolute -left-[40%] top-[60%] h-72 w-72 animate-pulse rounded-full bg-indigo-500 blur-3xl"></div>
+        </div>
+        
+        <div className="relative z-10 text-center">
+          <h1 className="mb-2 bg-gradient-to-r from-indigo-400 via-purple-500 to-pink-500 bg-clip-text text-4xl font-bold text-transparent">
+            Video Timestamp Analyzer
+          </h1>
+          <p className="mx-auto max-w-2xl text-zinc-400">
+            Upload your video to automatically detect key moments, generate intelligent timestamps, and keep track of important events
+          </p>
+        </div>
+      </div>
 
+      <div className="mx-auto w-full max-w-5xl">
+        <div className="">
+          {/* Main Content Area */}
+          <div className={`space-y-8 rounded-xl border border-zinc-800 bg-black p-6 shadow-2xl lg:col-span-${videoUrl ? '5' : '7'}`}>
+            {/* Upload Zone */}
             {!videoUrl && (
-              <div className='flex justify-center'>
-                <div className='w-full max-w-md'>
+              <div className="flex justify-center">
+                <div className="w-full max-w-lg">
                   <label
-                    htmlFor='video-upload'
-                    className='flex h-32 w-full cursor-pointer flex-col items-center justify-center rounded-lg border-2 border-dashed border-zinc-700 transition-colors hover:bg-zinc-800/50'
+                    htmlFor="video-upload"
+                    className={`flex h-64 w-full cursor-pointer flex-col items-center justify-center rounded-lg border-2 border-dashed transition-all duration-300 ${
+                      isDragging
+                        ? 'border-purple-500 bg-purple-900/20'
+                        : 'border-zinc-700 hover:border-purple-500 hover:bg-zinc-800/30'
+                    }`}
                     onDragOver={(e) => {
                       e.preventDefault();
                       e.stopPropagation();
-                      e.currentTarget.classList.add('border-purple-500');
+                      setIsDragging(true);
                     }}
                     onDragLeave={(e) => {
                       e.preventDefault();
                       e.stopPropagation();
-                      e.currentTarget.classList.remove('border-purple-500');
+                      setIsDragging(false);
                     }}
                     onDrop={(e) => {
                       e.preventDefault();
                       e.stopPropagation();
-                      e.currentTarget.classList.remove('border-purple-500');
+                      setIsDragging(false);
 
                       const file = e.dataTransfer.files[0];
                       if (file && file.type.startsWith('video/')) {
@@ -248,18 +269,27 @@ export default function UploadPage() {
                       }
                     }}
                   >
-                    <div className='flex flex-col items-center justify-center pb-6 pt-5'>
-                      <Upload className='mb-2 h-8 w-8 text-zinc-400' />
-                      <p className='mb-2 text-sm text-zinc-400'>
-                        <span className='font-semibold'>Click to upload</span>{' '}
-                        or drag and drop
-                      </p>
+                    <div className="flex flex-col items-center justify-center space-y-4 px-6 py-10 text-center">
+                      <div className="rounded-full bg-purple-900/20 p-4">
+                        <Upload className="h-10 w-10 text-purple-400" />
+                      </div>
+                      <div className="space-y-2">
+                        <p className="text-lg font-medium text-white">
+                          Drag & drop or click to upload
+                        </p>
+                        <p className="text-sm text-zinc-400">
+                          MP4, MOV, WebM, AVI up to 500MB
+                        </p>
+                      </div>
+                      <Button className="mt-2 bg-gradient-to-r from-purple-500 to-indigo-600 text-white transition-all hover:from-purple-600 hover:to-indigo-700">
+                        Select Video File
+                      </Button>
                     </div>
                     <input
-                      id='video-upload'
-                      type='file'
-                      accept='video/*'
-                      className='hidden'
+                      id="video-upload"
+                      type="file"
+                      accept="video/*"
+                      className="hidden"
                       onChange={handleFileUpload}
                       disabled={isUploading || isAnalyzing}
                     />
@@ -268,55 +298,236 @@ export default function UploadPage() {
               </div>
             )}
 
+            {/* Progress Indicator */}
             {(isUploading || isAnalyzing) && (
-              <div className='space-y-2'>
-                <Progress value={uploadProgress} className='w-full' />
-                <p className='text-center text-sm text-zinc-400'>
-                  {isUploading
-                    ? 'Uploading video...'
-                    : 'Analyzing video content...'}
-                </p>
-              </div>
-            )}
-
-            {videoUrl && (
-              <div className='space-y-4'>
-                <VideoPlayer
-                  url={videoUrl}
-                  timestamps={timestamps}
-                  ref={videoRef}
-                />
-                <TimestampList
-                  timestamps={timestamps}
-                  onTimestampClick={handleTimestampClick}
-                />
-                <div className='flex items-center space-x-2'>
-                  <Input
-                    type='text'
-                    placeholder='Video name'
-                    value={videoName}
-                    onChange={(e) => setVideoName(e.target.value)}
-                    className='border-zinc-700 bg-zinc-800 text-white'
-                  />
-                  <Button
-                    onClick={handleSaveVideo}
-                    className='bg-white text-black hover:bg-gray-200'
-                  >
-                    <Save className='mr-2 h-4 w-4' />
-                    Save Video
-                  </Button>
+              <div className="space-y-4 rounded-lg border border-zinc-800 bg-zinc-900/50 p-6">
+                <div className="flex items-center justify-between">
+                  <div>
+                    <h3 className="text-lg font-medium text-white">
+                      {isUploading ? 'Uploading Video' : 'Analyzing Content'}
+                    </h3>
+                    <p className="text-sm text-zinc-400">
+                      {isUploading
+                        ? 'Preparing your video...'
+                        : 'AI is processing each frame to identify key moments...'}
+                    </p>
+                  </div>
+                  <div className="flex h-10 w-10 items-center justify-center rounded-full bg-indigo-900/30">
+                    {isUploading ? (
+                      <Film className="h-5 w-5 text-indigo-400" />
+                    ) : (
+                      <Clock className="h-5 w-5 text-indigo-400" />
+                    )}
+                  </div>
+                </div>
+                
+                <div className="space-y-2">
+                  <div className="flex justify-between text-xs text-zinc-500">
+                    <span>Processing</span>
+                    <span>{uploadProgress}%</span>
+                  </div>
+                  <div className="relative h-2 w-full overflow-hidden rounded-full bg-zinc-800">
+                    <div 
+                      className="absolute left-0 top-0 h-full bg-gradient-to-r from-indigo-500 to-purple-500 transition-all duration-300"
+                      style={{ width: `${uploadProgress}%` }}
+                    ></div>
+                  </div>
                 </div>
               </div>
             )}
 
-            <div className='text-center'>
-              <Link
-                href='/pages/saved-videos'
-                className='text-white hover:text-gray-300'
-              >
-                View Saved Videos
-              </Link>
+            {/* Video Player and Timestamps */}
+            {videoUrl && (
+              <div className="space-y-6">
+                <div className="overflow-hidden rounded-lg border border-zinc-800 bg-zinc-900/30">
+                  <VideoPlayer
+                    url={videoUrl}
+                    timestamps={timestamps}
+                    ref={videoRef}
+                  />
+                </div>
+                
+                {timestamps.length > 0 ? (
+                  <div className="rounded-lg border border-zinc-800 bg-zinc-900/30 p-4">
+                    <div className="mb-4 flex items-center justify-between">
+                      <h3 className="text-lg font-medium text-white">
+                        <span className="mr-2">Detected Key Moments</span>
+                        <Badge className="bg-indigo-600">{timestamps.length}</Badge>
+                      </h3>
+                    </div>
+                    <TimestampList
+                      timestamps={timestamps}
+                      onTimestampClick={handleTimestampClick}
+                    />
+                  </div>
+                ) : !isAnalyzing && (
+                  <div className="rounded-lg border border-zinc-800 bg-zinc-900/30 p-6 text-center">
+                    <div className="mx-auto mb-4 flex h-16 w-16 items-center justify-center rounded-full bg-indigo-900/20">
+                      <Clock className="h-8 w-8 text-indigo-400" />
+                    </div>
+                    <h3 className="mb-2 text-lg font-medium text-white">No Timestamps Detected</h3>
+                    <p className="text-zinc-400">
+                      We couldn't find any notable moments in this video. You can still save it to your library.
+                    </p>
+                  </div>
+                )}
+                
+                {/* Video Saving UI */}
+                <div className="rounded-lg border border-zinc-800 bg-zinc-900/30 p-4">
+                  <div className="flex flex-col space-y-4 sm:flex-row sm:items-center sm:justify-between sm:space-x-4 sm:space-y-0">
+                    <div className="flex-grow">
+                      <Input
+                        type="text"
+                        placeholder="Enter a name for this video"
+                        value={videoName}
+                        onChange={(e) => setVideoName(e.target.value)}
+                        className="border-zinc-700 bg-zinc-800 text-white"
+                      />
+                    </div>
+                    <div>
+                      <Button
+                        onClick={handleSaveVideo}
+                        className="w-full bg-gradient-to-r from-purple-500 to-indigo-600 text-white transition-all hover:from-purple-600 hover:to-indigo-700 sm:w-auto"
+                        disabled={!videoName}
+                      >
+                        <Save className="mr-2 h-4 w-4" />
+                        Save to Library
+                      </Button>
+                    </div>
+                  </div>
+                  
+                  {showSuccessMessage && (
+                    <Alert className="mt-4 border-green-800 bg-green-900/20 text-green-300">
+                      <AlertDescription className="flex items-center">
+                        <span className="mr-2 flex h-6 w-6 items-center justify-center rounded-full bg-green-900/50">✓</span>
+                        Video saved successfully to your library!
+                      </AlertDescription>
+                    </Alert>
+                  )}
+                </div>
+              </div>
+            )}
+          </div>
+
+          {/* Sidebar - Only shown when a video is loaded */}
+          {videoUrl && (
+            <div className="space-y-6 lg:col-span-2">
+              <div className="rounded-xl border border-zinc-800 bg-black p-4 shadow-lg">
+                <h3 className="mb-4 text-lg font-medium text-white">Video Info</h3>
+                
+                <div className="space-y-3 text-sm">
+                  <div className="flex items-center justify-between">
+                    <span className="text-zinc-400">Name:</span>
+                    <span className="font-medium text-white">{videoName}</span>
+                  </div>
+                  
+                  <div className="flex items-center justify-between">
+                    <span className="text-zinc-400">Duration:</span>
+                    <span className="font-medium text-white">
+                      {videoRef.current?.duration 
+                        ? `${Math.floor(videoRef.current.duration / 60)}:${Math.floor(videoRef.current.duration % 60).toString().padStart(2, '0')}`
+                        : '--:--'}
+                    </span>
+                  </div>
+                  
+                  <div className="flex items-center justify-between">
+                    <span className="text-zinc-400">Timestamps:</span>
+                    <Badge className="bg-indigo-600">{timestamps.length}</Badge>
+                  </div>
+                  
+                  {timestamps.some(t => t.isDangerous) && (
+                    <div className="mt-4 flex items-center rounded-lg bg-red-900/20 p-2 text-red-300">
+                      <AlertTriangle className="mr-2 h-4 w-4" />
+                      <span className="text-xs">Contains potentially sensitive content</span>
+                    </div>
+                  )}
+                </div>
+              </div>
+              
+              <div className="rounded-xl border border-zinc-800 bg-black p-4 shadow-lg">
+                <h3 className="mb-4 text-lg font-medium text-white">Quick Actions</h3>
+                
+                <div className="space-y-2">
+                  <Button 
+                    variant="outline"
+                    className="w-full justify-between border-zinc-700 text-left hover:bg-zinc-800"
+                    onClick={() => {if (videoRef.current) videoRef.current.play()}}
+                  >
+                    <span>Play Video</span>
+                    <ChevronRight className="h-4 w-4" />
+                  </Button>
+                  
+                  <Link href="/pages/saved-videos">
+                    <Button 
+                      variant="outline"
+                      className="w-full justify-between border-zinc-700 text-left hover:bg-zinc-800"
+                    >
+                      <span>View Library</span>
+                      <ChevronRight className="h-4 w-4" />
+                    </Button>
+                  </Link>
+                  
+                  <Button 
+                    variant="outline"
+                    className="w-full justify-between border-zinc-700 text-left hover:bg-zinc-800"
+                    onClick={() => {
+                      setVideoUrl('');
+                      setTimestamps([]);
+                      setVideoName('');
+                    }}
+                  >
+                    <span>Upload New Video</span>
+                    <ChevronRight className="h-4 w-4" />
+                  </Button>
+                </div>
+              </div>
+              
+              <div className="rounded-xl border border-zinc-800 bg-black p-4 shadow-lg">
+                <TooltipProvider>
+                  <Tooltip>
+                    <TooltipTrigger asChild>
+                      <div className="cursor-help">
+                        <h3 className="mb-2 text-lg font-medium text-white">How It Works</h3>
+                      </div>
+                    </TooltipTrigger>
+                    <TooltipContent className="max-w-xs bg-zinc-800 text-white">
+                      Our AI analyzes your video frames to detect important moments automatically
+                    </TooltipContent>
+                  </Tooltip>
+                </TooltipProvider>
+                
+                <p className="text-sm text-zinc-400">
+                  Our AI scans your video at regular intervals to detect key moments, objects, 
+                  actions, and potential concerns, automatically creating an indexed timeline.
+                </p>
+              </div>
             </div>
+          )}
+        </div>
+        
+        {/* Footer */}
+        <div className="mt-8 flex justify-center">
+          <div className="flex items-center space-x-4 text-sm text-zinc-500">
+            <Link 
+              href="/pages/saved-videos"
+              className="text-indigo-400 transition-colors hover:text-indigo-300"
+            >
+              View Saved Videos
+            </Link>
+            <span>•</span>
+            <Link 
+              href="#help"
+              className="text-zinc-500 transition-colors hover:text-zinc-400"
+            >
+              Help
+            </Link>
+            <span>•</span>
+            <Link 
+              href="#about"
+              className="text-zinc-500 transition-colors hover:text-zinc-400"
+            >
+              About
+            </Link>
           </div>
         </div>
       </div>
