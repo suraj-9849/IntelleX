@@ -9,7 +9,7 @@ export const locations: Location[] = [
         id:"cam-1",
         name:"hackathon1",
         location:"nexus",
-        address:"Knowathon 2.0",
+        address:"{ EVERYTHING SEEMS NORMAL } Big brains innovating",
         thumbnail:"/placeholder.svg?height=480&width=640",
         videoUrl:"/videos/hackathon1.mp4",
       }
