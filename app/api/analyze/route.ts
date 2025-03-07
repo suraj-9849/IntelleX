@@ -5,9 +5,7 @@ const genAI = new GoogleGenerativeAI(process.env.GEMINI_API_KEY!);
 
 export async function POST(request: Request) {
   try {
-    const { videoUrl } = await request.json();
 
-    // mocking right now
     const mockTimestamps = [
       {
         timestamp: '00:03',

@@ -51,7 +51,6 @@ export default function InvestigatePage() {
       return null;
     }
 
-    // Wait for video to seek to the specified time
     await new Promise((resolve) => {
       video.onseeked = resolve;
     });
@@ -88,11 +87,10 @@ export default function InvestigatePage() {
         throw new Error('Invalid video duration');
       }
 
-      const interval = 3; // Analyze one frame every 3 seconds
+      const interval = 3;
       const newTimestamps: Timestamp[] = [];
       const newDangerousFrames: string[] = [];
 
-      // Process frames at regular intervals
       for (let time = 0; time < duration; time += interval) {
         const progress = Math.floor((time / duration) * 100);
         setUploadProgress(progress);

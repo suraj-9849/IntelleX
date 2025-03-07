@@ -11,6 +11,7 @@ import {
 } from 'framer-motion';
 import { ComponentPropsWithoutRef, useEffect, useRef, useState } from 'react';
 
+
 const tabs = [
   {
     title: 'Real-time detection of dangerous activity',
@@ -18,21 +19,32 @@ const tabs = [
     backgroundPositionX: 0,
     backgroundPositionY: 0,
     backgroundSizeX: 150,
+    image:"real-time.jpeg"
   },
   {
-    title: 'Analyze .mp4',
+    title: 'Upload Feature',
     isNew: false,
     backgroundPositionX: 98,
     backgroundPositionY: 100,
     backgroundSizeX: 135,
+    image:"upload.jpeg"
   },
   {
     title: 'Statistics page',
+    backgroundPositionX: 100,
+    backgroundPositionY: 27,
+    backgroundSizeX: 177,
+    image:"statistics.jpeg"
+  },
+  {
+    title: 'TrackX',
     isNew: true,
     backgroundPositionX: 100,
     backgroundPositionY: 27,
     backgroundSizeX: 177,
+    image:"trackx.jpeg"
   },
+
 ];
 
 const FeatureTab = (
@@ -179,6 +191,15 @@ export function Features() {
               />
             ))}
           </div>
+          <motion.div className={"border border-muted rounded-xl p-2.5 mt-3"}>
+            <div
+              className={"aspect-video object-cover bg-cover border border-muted rounded-lg"}
+              style={{
+                backgroundPosition: backgroundPosition.get(),
+                backgroundImage: `url(${tabs[selectedTab].image})`,
+              }}
+            ></div>
+          </motion.div>
         </div>
       </section>
     </>

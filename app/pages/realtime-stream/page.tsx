@@ -11,7 +11,6 @@ import { Timeline } from '../../components/Timeline';
 import type { Timestamp } from '@/app/types';
 import { detectEvents, type VideoEvent } from './actions';
 
-// Dynamically import TensorFlow.js and models
 import type * as blazeface from '@tensorflow-models/blazeface';
 import type * as posedetection from '@tensorflow-models/pose-detection';
 import type * as tf from '@tensorflow/tfjs';
@@ -35,15 +34,7 @@ interface Keypoint {
   name?: string;
 }
 
-interface FacePrediction {
-  topLeft: [number, number] | tf.Tensor1D;
-  bottomRight: [number, number] | tf.Tensor1D;
-  landmarks?: Array<[number, number]> | tf.Tensor2D;
-  probability: number | tf.Tensor1D;
-}
-
 export default function Page() {
-  // States
   const [isRecording, setIsRecording] = useState(false);
   const [timestamps, setTimestamps] = useState<Timestamp[]>([]);
   const [analysisProgress, setAnalysisProgress] = useState(0);
@@ -87,19 +78,16 @@ export default function Page() {
       setMlModelsReady(false);
       setError(null);
 
-      // Start loading TensorFlow.js in parallel with other initialization
       setInitializationProgress('Loading TensorFlow.js...');
       const tfPromise = import('@tensorflow/tfjs').then(async (tf) => {
         tfjs = tf;
-        // Configure TF.js for better performance
         await tf.ready();
         await tf.setBackend('webgl');
-        await tf.env().set('WEBGL_FORCE_F16_TEXTURES', true); // Use F16 textures for better performance
-        await tf.env().set('WEBGL_PACK', true); // Enable texture packing
-        await tf.env().set('WEBGL_CHECK_NUMERICAL_PROBLEMS', false); // Disable numerical checks in production
+        await tf.env().set('WEBGL_FORCE_F16_TEXTURES', true);
+        await tf.env().set('WEBGL_PACK', true);
+        await tf.env().set('WEBGL_CHECK_NUMERICAL_PROBLEMS', false);
       });
 
-      // Load models in parallel
       setInitializationProgress('Loading face and pose detection models...');
       const [blazefaceModule, poseDetectionModule] = await Promise.all([
         import('@tensorflow-models/blazeface'),
@@ -109,15 +97,12 @@ export default function Page() {
       blazefaceModel = blazefaceModule;
       poseDetection = poseDetectionModule;
 
-      // Wait for TF.js to be ready
       await tfPromise;
-
-      // Load models in parallel
       setInitializationProgress('Initializing models...');
       const [faceModel, poseModel] = await Promise.all([
         blazefaceModel.load({
-          maxFaces: 1, // Limit to 1 face for better performance
-          scoreThreshold: 0.5, // Increase threshold for better performance
+          maxFaces: 1,
+          scoreThreshold: 0.5, 
         }),
         poseDetection.createDetector(poseDetection.SupportedModels.MoveNet, {
           modelType: poseDetection.movenet.modelType.SINGLEPOSE_LIGHTNING,
@@ -140,12 +125,11 @@ export default function Page() {
     }
   };
 
-  // Helper to set canvas dimensions
   const updateCanvasSize = () => {
     if (!videoRef.current || !canvasRef.current) return;
     const canvas = canvasRef.current;
-    canvas.width = 640; // fixed width
-    canvas.height = 360; // fixed height (16:9)
+    canvas.width = 640;
+    canvas.height = 360;
   };
 
   // -----------------------------
@@ -166,7 +150,6 @@ export default function Page() {
         videoRef.current.srcObject = stream;
         mediaStreamRef.current = stream;
 
-        // Wait for video metadata so we can set the canvas size
         await new Promise<void>((resolve) => {
           videoRef.current!.onloadedmetadata = () => {
             updateCanvasSize();
@@ -325,7 +308,6 @@ export default function Page() {
               ctx.fillStyle = 'rgba(255, 0, 0, 0.8)';
               ctx.fill();
 
-              // Outer circle
               ctx.beginPath();
               ctx.arc(x, y, 6, 0, 2 * Math.PI);
               ctx.strokeStyle = 'white';
@@ -408,7 +390,6 @@ export default function Page() {
           };
           setTimestamps((prev) => [...prev, newTimestamp]);
 
-          // For dangerous events, send an email notification
           if (event.isDangerous) {
             try {
               const emailPayload = {
@@ -424,7 +405,6 @@ export default function Page() {
                 body: JSON.stringify(emailPayload),
               });
 
-              // Check if response is ok before trying to parse JSON
               if (!response.ok) {
                 if (response.status === 401) {
                   setError(
@@ -447,7 +427,6 @@ export default function Page() {
                 return;
               }
 
-              // Only try to parse JSON for successful responses
               const resData = await response.json();
               console.log('Email notification sent successfully:', resData);
             } catch (error) {
@@ -499,7 +478,6 @@ export default function Page() {
     const elapsed = Math.floor(
       (Date.now() - startTimeRef.current.getTime()) / 1000
     );
-    // Update current time for timeline
     setCurrentTime(elapsed);
     const minutes = Math.floor(elapsed / 60);
     const seconds = elapsed % 60;
