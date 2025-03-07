@@ -14,8 +14,12 @@ export default function ProtectedPage() {
   const router = useRouter();
   const [loading, setLoading] = useState(true);
   const [selectedCamera, setSelectedCamera] = useState<string | null>(null);
+  const [mainCamera, setMainCamera] = useState<string | null>(null);
   const [videoTimes, setVideoTimes] = useState<Record<string, number>>({});
   const [hoveredCamera, setHoveredCamera] = useState<string | null>(null);
+
+  // Flatten all cameras for easier access
+  const allCameras = locations.flatMap(location => location.cameras);
 
   // Check auth on mount
   useEffect(() => {
@@ -29,6 +33,11 @@ export default function ProtectedPage() {
         if (error || !user) {
           router.push('/sign-in');
           return;
+        }
+
+        // Set the first camera as the main camera on initial load
+        if (allCameras.length > 0) {
+          setMainCamera(allCameras[0].id);
         }
 
         setLoading(false);
@@ -52,7 +61,7 @@ export default function ProtectedPage() {
     return () => {
       subscription?.unsubscribe();
     };
-  }, [supabase.auth, router]);
+  }, [supabase.auth, router, allCameras]);
 
   const handleTimeUpdate = (cameraId: string, time: number) => {
     setVideoTimes((prev) => ({
@@ -70,6 +79,10 @@ export default function ProtectedPage() {
     }));
   };
 
+  const handleMarqueeVideoClick = (cameraId: string) => {
+    setSelectedCamera(cameraId);
+  };
+
   if (loading) {
     return (
       <div className='flex flex-1 items-center justify-center'>
@@ -78,38 +91,57 @@ export default function ProtectedPage() {
     );
   }
 
+  // Find the main camera object
+  const mainCameraObj = allCameras.find(camera => camera.id === mainCamera);
+
   return (
     <div className='flex w-full flex-1'>
       {/* Main Content */}
       <div className='flex-1 overflow-auto'>
         <div className='container mx-auto py-6'>
-          <div className='grid grid-cols-1 gap-4 md:grid-cols-2 lg:grid-cols-3'>
-            {locations.flatMap((location) =>
-              location.cameras.map((camera) => (
-                <button
-                  key={camera.id}
-                  onClick={() => setSelectedCamera(camera.id)}
-                  onMouseEnter={() => setHoveredCamera(camera.id)}
-                  onMouseLeave={() => setHoveredCamera(null)}
-                  className={`relative aspect-video overflow-hidden rounded-lg transition-opacity duration-300 hover:ring-2 hover:ring-blue-500 focus:outline-none focus:ring-2 focus:ring-blue-500 ${
-                    hoveredCamera && hoveredCamera !== camera.id
-                      ? 'opacity-30'
-                      : 'opacity-100'
-                  }`}
-                >
-                  <CameraFeed
-                    camera={camera}
-                    onTimeUpdate={(time) => handleTimeUpdate(camera.id, time)}
-                  />
-                  <div className='absolute inset-x-0 bottom-0 bg-gradient-to-t from-black/75 to-transparent p-4'>
-                    <div className='font-medium text-white'>{camera.name}</div>
-                    <div className='text-sm text-white/75'>
-                      {camera.address}
+          {/* Main Camera Display */}
+          {mainCameraObj && (
+            <div className='mb-6'>
+              <div className='relative aspect-video overflow-hidden rounded-lg'>
+                <CameraFeed
+                  camera={mainCameraObj}
+                  onTimeUpdate={(time) => handleTimeUpdate(mainCameraObj.id, time)}
+                />
+                <div className='absolute inset-x-0 bottom-0 bg-gradient-to-t from-black/75 to-transparent p-4'>
+                  <div className='font-medium text-white'>{mainCameraObj.name}</div>
+                  <div className='text-sm text-white/75'>{mainCameraObj.address}</div>
+                </div>
+              </div>
+            </div>
+          )}
+
+          {/* Marquee Camera Scrolling */}
+          <div className='relative overflow-hidden'>
+            <div className='flex animate-marquee space-x-4 py-2'>
+              {locations.flatMap((location) =>
+                location.cameras.map((camera) => (
+                  <button
+                    key={camera.id}
+                    onClick={() => handleMarqueeVideoClick(camera.id)}
+                    onMouseEnter={() => setHoveredCamera(camera.id)}
+                    onMouseLeave={() => setHoveredCamera(null)}
+                    className={`relative h-32 w-56 flex-shrink-0 overflow-hidden rounded-lg transition-opacity duration-300 hover:ring-2 hover:ring-blue-500 focus:outline-none focus:ring-2 focus:ring-blue-500 ${
+                      hoveredCamera && hoveredCamera !== camera.id
+                        ? 'opacity-70'
+                        : 'opacity-100'
+                    }`}
+                  >
+                    <CameraFeed
+                      camera={camera}
+                      onTimeUpdate={(time) => handleTimeUpdate(camera.id, time)}
+                    />
+                    <div className='absolute inset-x-0 bottom-0 bg-gradient-to-t from-black/75 to-transparent p-2'>
+                      <div className='text-sm font-medium text-white'>{camera.name}</div>
                     </div>
-                  </div>
-                </button>
-              ))
-            )}
+                  </button>
+                ))
+              )}
+            </div>
           </div>
         </div>
       </div>
@@ -127,7 +159,7 @@ export default function ProtectedPage() {
         </div>
       </div>
 
-      {/* Camera Modal */}
+      {/* Camera Modal - Now used for both event clicks and marquee video clicks */}
       {selectedCamera && (
         <CameraModal
           open={true}
