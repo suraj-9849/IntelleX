@@ -2,6 +2,20 @@ import type { Event, Location, BoundingBoxData } from '@/types';
 
 export const locations: Location[] = [
   {
+    id:"hackathon 2",
+    name:"techathon",
+    cameras:[
+      {
+        id:"cam-1",
+        name:"hackathon1",
+        location:"nexus",
+        address:"Knowathon 2.0",
+        thumbnail:"/placeholder.svg?height=480&width=640",
+        videoUrl:"/videos/hackathon1.mp4",
+      }
+    ]
+  },
+  {
     id: 'shopping-mall',
     name: 'Shopping Mall',
     cameras: [
@@ -131,6 +145,17 @@ export const locations: Location[] = [
 ];
 
 export const analyzedEvents = [
+  {
+    videoId: 'hackathon1.mp4',
+    timeline: [
+      {
+        time: '00:02',
+        event: 'Everyone is knowathoning',
+      }
+    ],
+    crimeType: ['Vandalism', 'Disorderly Conduct'],
+    location: 'United States, Bar/Restaurant',
+  },
   {
     videoId: 'Fighting0',
     timeline: [
@@ -268,7 +293,7 @@ export interface Stats {
 
 export function getSystemStats(): Stats {
   return {
-    totalCameras: 12,
+    totalCameras: 13,
     onlineCameras: 15,
   };
 }
