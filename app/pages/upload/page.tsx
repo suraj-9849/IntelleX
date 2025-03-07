@@ -476,55 +476,11 @@ export default function UploadPage() {
                   </Button>
                 </div>
               </div>
-              
-              <div className="rounded-xl border border-zinc-800 bg-black p-4 shadow-lg">
-                <TooltipProvider>
-                  <Tooltip>
-                    <TooltipTrigger asChild>
-                      <div className="cursor-help">
-                        <h3 className="mb-2 text-lg font-medium text-white">How It Works</h3>
-                      </div>
-                    </TooltipTrigger>
-                    <TooltipContent className="max-w-xs bg-zinc-800 text-white">
-                      Our AI analyzes your video frames to detect important moments automatically
-                    </TooltipContent>
-                  </Tooltip>
-                </TooltipProvider>
-                
-                <p className="text-sm text-zinc-400">
-                  Our AI scans your video at regular intervals to detect key moments, objects, 
-                  actions, and potential concerns, automatically creating an indexed timeline.
-                </p>
-              </div>
             </div>
           )}
         </div>
         
-        {/* Footer */}
-        <div className="mt-8 flex justify-center">
-          <div className="flex items-center space-x-4 text-sm text-zinc-500">
-            <Link 
-              href="/pages/saved-videos"
-              className="text-indigo-400 transition-colors hover:text-indigo-300"
-            >
-              View Saved Videos
-            </Link>
-            <span>•</span>
-            <Link 
-              href="#help"
-              className="text-zinc-500 transition-colors hover:text-zinc-400"
-            >
-              Help
-            </Link>
-            <span>•</span>
-            <Link 
-              href="#about"
-              className="text-zinc-500 transition-colors hover:text-zinc-400"
-            >
-              About
-            </Link>
-          </div>
-        </div>
+      
       </div>
     </div>
   );
