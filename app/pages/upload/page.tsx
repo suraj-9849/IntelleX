@@ -205,7 +205,6 @@ export default function UploadPage() {
 
   return (
     <div className="flex min-h-screen flex-col bg-gradient-to-br from-zinc-900 via-black to-zinc-900 p-4 text-white">
-      {/* Header with animated gradient */}
       <div className="relative mx-auto mb-8 w-full max-w-5xl overflow-hidden rounded-xl bg-black p-8">
         <div className="absolute inset-0 z-0 opacity-10">
           <div className="absolute -inset-[10px] animate-pulse rounded-full bg-purple-600 blur-3xl"></div>
@@ -225,9 +224,7 @@ export default function UploadPage() {
 
       <div className="mx-auto w-full max-w-5xl">
         <div className="">
-          {/* Main Content Area */}
           <div className={`space-y-8 rounded-xl border border-zinc-800 bg-black p-6 shadow-2xl lg:col-span-${videoUrl ? '5' : '7'}`}>
-            {/* Upload Zone */}
             {!videoUrl && (
               <div className="flex justify-center">
                 <div className="w-full max-w-lg">
@@ -298,7 +295,6 @@ export default function UploadPage() {
               </div>
             )}
 
-            {/* Progress Indicator */}
             {(isUploading || isAnalyzing) && (
               <div className="space-y-4 rounded-lg border border-zinc-800 bg-zinc-900/50 p-6">
                 <div className="flex items-center justify-between">
@@ -336,7 +332,6 @@ export default function UploadPage() {
               </div>
             )}
 
-            {/* Video Player and Timestamps */}
             {videoUrl && (
               <div className="space-y-6">
                 <div className="overflow-hidden rounded-lg border border-zinc-800 bg-zinc-900/30">
