@@ -378,12 +378,11 @@ const Page = () => {
         </div>
       )}
 
-      {/* Watch Tab */}
       {activeTab === "watch" && (
         <div className="flex-1 p-4">
           <Card className="h-full">
             <CardHeader>
-              <CardTitle>Full Website View</CardTitle>
+              <CardTitle>Robot Tracking</CardTitle>
             </CardHeader>
             <CardContent className="h-[calc(100vh-150px)]">
               {watchUrl ? (

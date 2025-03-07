@@ -160,7 +160,7 @@ export default function InvestigatePage() {
   };
 
   return (
-    <div className='min-h-screen bg-gradient-to-br from-slate-900 via-slate-800 to-slate-900 p-8 text-white'>
+    <div className='min-h-screen  p-8 text-white'>
       <div className='container mx-auto max-w-7xl'>
         <div className='mb-12 text-center'>
           <h1 className='mb-4 bg-gradient-to-r from-blue-500 to-indigo-600 bg-clip-text text-5xl font-extrabold text-transparent'>
@@ -172,7 +172,6 @@ export default function InvestigatePage() {
         </div>
 
         <div className='grid gap-8 lg:grid-cols-2'>
-          {/* Video Upload Section */}
           <Card className='border-slate-700 bg-slate-800/60 shadow-2xl backdrop-blur-lg'>
             <CardHeader>
               <CardTitle className='flex items-center text-xl'>
