@@ -7,7 +7,7 @@ Traditional surveillance systems are passive and often fail to provide timely in
 ## 🛠 What It Does
 
 IntellexAI is an AI-powered surveillance platform that:
-- Detects crime, suspicious activities, and emergencies (e.g., fainting, choking).
+- Detects crime, suspicious activities, and emergencies (e.g., fainting, choking, fighting).
 - Sends real-time alerts to security teams via email and phone notifications.
 - Generates time-stamped incident reports with video evidence.
 
@@ -26,19 +26,20 @@ IntellexAI is an AI-powered surveillance platform that:
 - **AI Processing:** Google's Gemini API, TensorFlow.js
 - **Real-time Communication:** Canvas API
 - **Notifications:** Resend API (Email & Phone Alerts)
-- **Hardware Integration:** Arduino (Robo Camera)
+- **Hardware Integration:** Arduino, GPS Module, Bluetooth module, Chasis, ultrasonic sensor, servo motor, Esp32 Cam
 
 ## 🛠 Challenges We Faced
-- Making the Robot(RC Car)
-- Robot Integration with the Software
+- Making the Robot(RC Car).
+- Robot Integration with the Software.
 - Balancing real-time video processing with performance constraints.
 - Reducing false positives in AI detection.
 - Handling multiple video streams efficiently.
 
 ## 🎉 Accomplishments
-- Developed a fully functional AI surveillance system in 36 hours.
+- Developed a fully functional AI surveillance system in 24 hours.
 - Achieved real-time video analysis with minimal latency.
-- Designed an intuitive and scalable architecture.
+- Designed an intuitive and scalable architecture that can handle multiple cameras.
+- Developed a system that's accessible through any IP Cameras.
 
 ## 🏁 Conclusion
 IntellexAI aims to revolutionize security surveillance by making it smarter, faster, and more effective. Whether for local businesses, hospitals, or large shopping malls, IntellexAI ensures that security personnel never miss a critical moment again.
