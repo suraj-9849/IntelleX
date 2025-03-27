@@ -160,7 +160,7 @@ export default function InvestigatePage() {
   };
 
   return (
-    <div className='min-h-screen  p-8 text-white'>
+    <div className='min-h-screen p-8 text-white'>
       <div className='container mx-auto max-w-7xl'>
         <div className='mb-12 text-center'>
           <h1 className='mb-4 bg-gradient-to-r from-blue-500 to-indigo-600 bg-clip-text text-5xl font-extrabold text-transparent'>

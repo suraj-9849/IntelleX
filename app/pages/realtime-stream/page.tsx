@@ -102,7 +102,7 @@ export default function Page() {
       const [faceModel, poseModel] = await Promise.all([
         blazefaceModel.load({
           maxFaces: 1,
-          scoreThreshold: 0.5, 
+          scoreThreshold: 0.5,
         }),
         poseDetection.createDetector(poseDetection.SupportedModels.MoveNet, {
           modelType: poseDetection.movenet.modelType.SINGLEPOSE_LIGHTNING,

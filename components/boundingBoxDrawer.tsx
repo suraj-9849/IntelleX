@@ -1,6 +1,6 @@
 import React, { useRef, useEffect } from 'react';
 
-const BoundingBoxDrawer = ({ imageUrl, boxes }:any) => {
+const BoundingBoxDrawer = ({ imageUrl, boxes }: any) => {
   const canvasRef = useRef<HTMLCanvasElement>(null);
 
   useEffect(() => {
@@ -60,7 +60,7 @@ const BoundingBoxDrawer = ({ imageUrl, boxes }:any) => {
         const xScale = width / image.width;
         const yScale = height / image.height;
 
-        boxes.forEach((box:any, i:any) => {
+        boxes.forEach((box: any, i: any) => {
           // Convert normalized coordinates to absolute coordinates
           let [y1, x1, y2, x2] = box.box_2d;
           y1 = (y1 / 1000) * height;

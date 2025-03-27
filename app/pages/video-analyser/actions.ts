@@ -21,18 +21,18 @@ let currentKeyIndex = 0;
 // Function to get the next API key in rotation
 function getNextApiKey() {
   // Filter out any undefined or empty keys
-  const validKeys = API_KEYS.filter(key => key);
-  
+  const validKeys = API_KEYS.filter((key) => key);
+
   if (validKeys.length === 0) {
     throw new Error('No valid API keys available');
   }
-  
+
   // Get the current key
   const key = validKeys[currentKeyIndex];
-  
+
   // Update the index for the next call
   currentKeyIndex = (currentKeyIndex + 1) % validKeys.length;
-  
+
   return key;
 }
 
@@ -50,33 +50,33 @@ export async function detectEvents(
     if (!base64Image) {
       throw new Error('No image data provided');
     }
-    
+
     const base64Data = base64Image.split(',')[1];
     if (!base64Data) {
       throw new Error('Invalid image data format');
     }
-    
+
     // Get the next API key in the rotation
     const API_KEY = getNextApiKey();
     if (!API_KEY) {
       throw new Error('Failed to retrieve a valid API key');
     }
     console.log(`Using API key index: ${currentKeyIndex}`);
-    
+
     // Initialize the Gemini API with the selected key
     const genAI = new GoogleGenerativeAI(API_KEY);
     const model = genAI.getGenerativeModel({ model: 'gemini-1.5-flash' });
     console.log('Initialized Gemini model');
-    
+
     const imagePart = {
       inlineData: {
         data: base64Data,
         mimeType: 'image/jpeg',
       },
     };
-    
+
     console.log('Sending image to API...', { imageSize: base64Data.length });
-    
+
     const prompt = `Analyze this frame and determine if any of these specific dangerous situations are occurring:
 1. Medical Emergencies:
 - Person unconscious or lying motionless
@@ -118,10 +118,10 @@ Return a JSON object in this exact format:
       const response = await result.response;
       const text = response.text();
       console.log('Raw API Response:', text);
-      
+
       // Try to extract JSON from the response, handling potential code blocks
       let jsonStr = text;
-      
+
       // First try to extract content from code blocks if present
       const codeBlockMatch = text.match(/```(?:json)?\s*({[\s\S]*?})\s*```/);
       if (codeBlockMatch) {
@@ -135,7 +135,7 @@ Return a JSON object in this exact format:
           console.log('Extracted raw JSON:', jsonStr);
         }
       }
-      
+
       try {
         const parsed = JSON.parse(jsonStr);
         return {

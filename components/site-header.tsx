@@ -70,7 +70,7 @@ export default function SiteHeader() {
                 <nav className={'flex items-center gap-8 text-sm'}>
                   <Link
                     href='/pages/upload'
-                    className={'text-white/70 pl-4 transition hover:text-white'}
+                    className={'pl-4 text-white/70 transition hover:text-white'}
                   >
                     Upload
                   </Link>
@@ -100,7 +100,7 @@ export default function SiteHeader() {
                   </Link>
                   <Link
                     href='/pages/investigation'
-                    className={'text-white/70 transition pr-4 hover:text-white'}
+                    className={'pr-4 text-white/70 transition hover:text-white'}
                   >
                     Investigation
                   </Link>
