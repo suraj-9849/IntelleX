@@ -17,7 +17,7 @@ const tabs = [
     backgroundPositionX: 0,
     backgroundPositionY: 0,
     backgroundSizeX: 150,
-    image:"real-time.jpeg"
+    image: 'real-time.jpeg',
   },
   {
     title: 'Upload Feature',
@@ -25,14 +25,14 @@ const tabs = [
     backgroundPositionX: 98,
     backgroundPositionY: 100,
     backgroundSizeX: 135,
-    image:"upload.jpeg"
+    image: 'upload.jpeg',
   },
   {
     title: 'Statistics page',
     backgroundPositionX: 100,
     backgroundPositionY: 27,
     backgroundSizeX: 177,
-    image:"statistics.jpeg"
+    image: 'statistics.jpeg',
   },
   {
     title: 'TrackX',
@@ -40,9 +40,8 @@ const tabs = [
     backgroundPositionX: 100,
     backgroundPositionY: 27,
     backgroundSizeX: 177,
-    image:"trackx.jpeg"
+    image: 'trackx.jpeg',
   },
-
 ];
 
 const FeatureTab = (
@@ -189,9 +188,11 @@ export function Features() {
               />
             ))}
           </div>
-          <motion.div className={"border border-muted rounded-xl p-2.5 mt-3"}>
+          <motion.div className={'mt-3 rounded-xl border border-muted p-2.5'}>
             <div
-              className={"aspect-video object-cover bg-cover border border-muted rounded-lg"}
+              className={
+                'aspect-video rounded-lg border border-muted bg-cover object-cover'
+              }
               style={{
                 backgroundPosition: backgroundPosition.get(),
                 backgroundImage: `url(${tabs[selectedTab].image})`,

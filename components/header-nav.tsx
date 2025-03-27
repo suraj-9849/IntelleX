@@ -12,10 +12,7 @@ export function HeaderNav() {
         </Link>
       </Button>
       <Button asChild variant='ghost' size='sm'>
-        <Link
-          href='/pages/realtime-stream'
-          className='flex items-center gap-2'
-        >
+        <Link href='/pages/realtime-stream' className='flex items-center gap-2'>
           <PlaySquare className='h-4 w-4' />
           <span>Realtime</span>
         </Link>

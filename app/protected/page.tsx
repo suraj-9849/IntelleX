@@ -19,7 +19,7 @@ export default function ProtectedPage() {
   const [hoveredCamera, setHoveredCamera] = useState<string | null>(null);
 
   // Flatten all cameras for easier access
-  const allCameras = locations.flatMap(location => location.cameras);
+  const allCameras = locations.flatMap((location) => location.cameras);
 
   // Check auth on mount
   useEffect(() => {
@@ -92,7 +92,7 @@ export default function ProtectedPage() {
   }
 
   // Find the main camera object
-  const mainCameraObj = allCameras.find(camera => camera.id === mainCamera);
+  const mainCameraObj = allCameras.find((camera) => camera.id === mainCamera);
 
   return (
     <div className='flex w-full flex-1'>
@@ -105,11 +105,17 @@ export default function ProtectedPage() {
               <div className='relative aspect-video overflow-hidden rounded-lg'>
                 <CameraFeed
                   camera={mainCameraObj}
-                  onTimeUpdate={(time) => handleTimeUpdate(mainCameraObj.id, time)}
+                  onTimeUpdate={(time) =>
+                    handleTimeUpdate(mainCameraObj.id, time)
+                  }
                 />
                 <div className='absolute inset-x-0 bottom-0 bg-gradient-to-t from-black/75 to-transparent p-4'>
-                  <div className='font-medium text-white'>{mainCameraObj.name}</div>
-                  <div className='text-sm text-white/75'>{mainCameraObj.address}</div>
+                  <div className='font-medium text-white'>
+                    {mainCameraObj.name}
+                  </div>
+                  <div className='text-sm text-white/75'>
+                    {mainCameraObj.address}
+                  </div>
                 </div>
               </div>
             </div>
@@ -117,7 +123,7 @@ export default function ProtectedPage() {
 
           {/* Marquee Camera Scrolling */}
           <div className='relative overflow-hidden'>
-            <div className='flex animate-marquee space-x-4 py-2'>
+            <div className='animate-marquee flex space-x-4 py-2'>
               {locations.flatMap((location) =>
                 location.cameras.map((camera) => (
                   <button
@@ -136,7 +142,9 @@ export default function ProtectedPage() {
                       onTimeUpdate={(time) => handleTimeUpdate(camera.id, time)}
                     />
                     <div className='absolute inset-x-0 bottom-0 bg-gradient-to-t from-black/75 to-transparent p-2'>
-                      <div className='text-sm font-medium text-white'>{camera.name}</div>
+                      <div className='text-sm font-medium text-white'>
+                        {camera.name}
+                      </div>
                     </div>
                   </button>
                 ))

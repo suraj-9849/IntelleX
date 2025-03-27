@@ -2,18 +2,18 @@ import type { Event, Location, BoundingBoxData } from '@/types';
 
 export const locations: Location[] = [
   {
-    id:"hackathon 2",
-    name:"techathon",
-    cameras:[
+    id: 'hackathon 2',
+    name: 'techathon',
+    cameras: [
       {
-        id:"cam-1",
-        name:"hackathon1",
-        location:"nexus",
-        address:"{ EVERYTHING SEEMS NORMAL } Big brains innovating",
-        thumbnail:"/placeholder.svg?height=480&width=640",
-        videoUrl:"/videos/hackathon1.mp4",
-      }
-    ]
+        id: 'cam-1',
+        name: 'hackathon1',
+        location: 'nexus',
+        address: '{ EVERYTHING SEEMS NORMAL } Big brains innovating',
+        thumbnail: '/placeholder.svg?height=480&width=640',
+        videoUrl: '/videos/hackathon1.mp4',
+      },
+    ],
   },
   {
     id: 'shopping-mall',
@@ -151,7 +151,7 @@ export const analyzedEvents = [
       {
         time: '00:02',
         event: 'Everyone is knowathoning',
-      }
+      },
     ],
     crimeType: ['Vandalism', 'Disorderly Conduct'],
     location: 'United States, Bar/Restaurant',
