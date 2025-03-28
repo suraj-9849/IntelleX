@@ -18,10 +18,8 @@ export default function ProtectedPage() {
   const [videoTimes, setVideoTimes] = useState<Record<string, number>>({});
   const [hoveredCamera, setHoveredCamera] = useState<string | null>(null);
 
-  // Flatten all cameras for easier access
   const allCameras = locations.flatMap((location) => location.cameras);
 
-  // Check auth on mount
   useEffect(() => {
     const checkAuth = async () => {
       try {
@@ -35,7 +33,6 @@ export default function ProtectedPage() {
           return;
         }
 
-        // Set the first camera as the main camera on initial load
         if (allCameras.length > 0) {
           setMainCamera(allCameras[0].id);
         }
@@ -91,15 +88,12 @@ export default function ProtectedPage() {
     );
   }
 
-  // Find the main camera object
   const mainCameraObj = allCameras.find((camera) => camera.id === mainCamera);
 
   return (
     <div className='flex w-full flex-1'>
-      {/* Main Content */}
       <div className='flex-1 overflow-auto'>
         <div className='container mx-auto py-6'>
-          {/* Main Camera Display */}
           {mainCameraObj && (
             <div className='mb-6'>
               <div className='relative aspect-video overflow-hidden rounded-lg'>
@@ -121,7 +115,6 @@ export default function ProtectedPage() {
             </div>
           )}
 
-          {/* Marquee Camera Scrolling */}
           <div className='relative overflow-hidden'>
             <div className='animate-marquee flex space-x-4 py-2'>
               {locations.flatMap((location) =>
@@ -154,7 +147,6 @@ export default function ProtectedPage() {
         </div>
       </div>
 
-      {/* Sidebar */}
       <div className='hidden w-96 overflow-auto border-l border-gray-200 p-6 dark:border-gray-800 lg:block'>
         <StatsOverview />
         <div className='mt-6'>
@@ -167,7 +159,6 @@ export default function ProtectedPage() {
         </div>
       </div>
 
-      {/* Camera Modal - Now used for both event clicks and marquee video clicks */}
       {selectedCamera && (
         <CameraModal
           open={true}
