@@ -177,7 +177,7 @@ export const AnalyzeTab: React.FC<AnalyzeTabProps> = ({ onError, onWatchUrlChang
 
   useEffect(() => {
     if (isAnalyzing) {
-      intervalRef.current = setInterval(captureAndAnalyzeFrame, 5000);
+      intervalRef.current = setInterval(captureAndAnalyzeFrame, 2000);
     } else if (intervalRef.current) {
       clearInterval(intervalRef.current);
       intervalRef.current = null;
