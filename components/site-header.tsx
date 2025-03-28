@@ -54,7 +54,7 @@ export default function SiteHeader() {
         <div className={'container max-md:px-4'}>
           <div
             className={
-              'mx-auto flex max-w-2xl items-center justify-between md:rounded-xl md:border md:p-2.5 md:backdrop-blur'
+              'mx-auto flex max-w-3xl items-center justify-between md:rounded-xl md:border md:p-2.5 md:backdrop-blur'
             }
           >
             <Link href={'/'}>
