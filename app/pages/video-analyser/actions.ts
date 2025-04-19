@@ -1,5 +1,5 @@
 'use server';
-import { GoogleGenerativeAI } from '@google/generative-ai';
+import { GoogleGenerativeAI, HarmCategory, HarmBlockThreshold } from '@google/generative-ai';
 
 // Array of API keys
 const API_KEYS = [
@@ -10,74 +10,33 @@ const API_KEYS = [
   process.env.GOOGLE_API_KEY_5,
   process.env.GOOGLE_API_KEY_6,
   process.env.GOOGLE_API_KEY_7,
-  process.env.GOOGLE_API_KEY_8,
   process.env.GOOGLE_API_KEY_9,
   process.env.GOOGLE_API_KEY_10,
-];
+].filter(Boolean) as string[];
 
-// Counter to keep track of which key was last used (stored in memory)
 let currentKeyIndex = 0;
-
-// Function to get the next API key in rotation
 function getNextApiKey() {
-  // Filter out any undefined or empty keys
-  const validKeys = API_KEYS.filter((key) => key);
-
-  if (validKeys.length === 0) {
-    throw new Error('No valid API keys available');
-  }
-
-  // Get the current key
-  const key = validKeys[currentKeyIndex];
-
-  // Update the index for the next call
-  currentKeyIndex = (currentKeyIndex + 1) % validKeys.length;
-
+  if (!API_KEYS.length) throw new Error('No valid API keys available');
+  const key = API_KEYS[currentKeyIndex];
+  currentKeyIndex = (currentKeyIndex + 1) % API_KEYS.length;
   return key;
 }
 
 export interface VideoEvent {
+  description: string;
   isDangerous: boolean;
   timestamp: string;
-  description: string;
 }
 
 export async function detectEvents(
-  base64Image: string
+  imageBlob: Blob
 ): Promise<{ events: VideoEvent[]; rawResponse: string }> {
-  console.log('Starting frame analysis...');
-  try {
-    if (!base64Image) {
-      throw new Error('No image data provided');
-    }
+  if (!imageBlob) throw new Error('No image data provided');
 
-    const base64Data = base64Image.split(',')[1];
-    if (!base64Data) {
-      throw new Error('Invalid image data format');
-    }
+  const API_KEY = getNextApiKey();
+  console.log(`Using API key index: ${currentKeyIndex}`);
 
-    // Get the next API key in the rotation
-    const API_KEY = getNextApiKey();
-    if (!API_KEY) {
-      throw new Error('Failed to retrieve a valid API key');
-    }
-    console.log(`Using API key index: ${currentKeyIndex}`);
-
-    // Initialize the Gemini API with the selected key
-    const genAI = new GoogleGenerativeAI(API_KEY);
-    const model = genAI.getGenerativeModel({ model: 'gemini-1.5-flash' });
-    console.log('Initialized Gemini model');
-
-    const imagePart = {
-      inlineData: {
-        data: base64Data,
-        mimeType: 'image/jpeg',
-      },
-    };
-
-    console.log('Sending image to API...', { imageSize: base64Data.length });
-
-    const prompt = `Analyze this frame and determine if any of these specific dangerous situations are occurring:
+  const prompt = `Analyze this frame and determine if any of these specific dangerous situations are occurring:
 1. Medical Emergencies:
 - Person unconscious or lying motionless
 - Person clutching chest/showing signs of heart problems
@@ -113,45 +72,55 @@ Return a JSON object in this exact format:
     ]
 }`;
 
-    try {
-      const result = await model.generateContent([prompt, imagePart]);
-      const response = await result.response;
-      const text = response.text();
-      console.log('Raw API Response:', text);
+  const genAI = new GoogleGenerativeAI(API_KEY);
+  const model = genAI.getGenerativeModel({
+    model: 'gemini-1.5-flash',
+    safetySettings: [
+      { category: HarmCategory.HARM_CATEGORY_HARASSMENT, threshold: HarmBlockThreshold.BLOCK_NONE },
+      { category: HarmCategory.HARM_CATEGORY_HATE_SPEECH, threshold: HarmBlockThreshold.BLOCK_NONE },
+      { category: HarmCategory.HARM_CATEGORY_SEXUALLY_EXPLICIT, threshold: HarmBlockThreshold.BLOCK_NONE },
+      { category: HarmCategory.HARM_CATEGORY_DANGEROUS_CONTENT, threshold: HarmBlockThreshold.BLOCK_NONE },
+    ],
+    generationConfig: {
+      temperature: 0,
+      topP: 0.1,
+      topK: 16,
+      maxOutputTokens: 300,
+    },
+  });
+  console.log('Initialized Gemini model with generationConfig');
 
-      // Try to extract JSON from the response, handling potential code blocks
-      let jsonStr = text;
+  const bytes = new Uint8Array(await imageBlob.arrayBuffer());
+  console.log(`Image size in bytes: ${bytes.length}`);
 
-      // First try to extract content from code blocks if present
-      const codeBlockMatch = text.match(/```(?:json)?\s*({[\s\S]*?})\s*```/);
-      if (codeBlockMatch) {
-        jsonStr = codeBlockMatch[1];
-        console.log('Extracted JSON from code block:', jsonStr);
-      } else {
-        // If no code block, try to find raw JSON
-        const jsonMatch = text.match(/\{[^]*\}/);
-        if (jsonMatch) {
-          jsonStr = jsonMatch[0];
-          console.log('Extracted raw JSON:', jsonStr);
-        }
-      }
+  const imagePart = {
+    inlineData: {
+      data: Buffer.from(bytes).toString('base64'),
+      mimeType: 'image/jpeg',
+    },
+  };
 
-      try {
-        const parsed = JSON.parse(jsonStr);
-        return {
-          events: parsed.events || [],
-          rawResponse: text,
-        };
-      } catch (parseError) {
-        console.error('Error parsing JSON:', parseError);
-        throw new Error('Failed to parse API response');
-      }
-    } catch (error) {
-      console.error('Error calling API:', error);
-      throw error;
-    }
-  } catch (error) {
-    console.error('Error in detectEvents:', error);
-    throw error;
+  const result = await model.generateContent([prompt, imagePart]);
+  const response = await result.response;
+  const text = await response.text();
+  console.log('Raw API Response:', text);
+
+  let jsonStr = text;
+  const codeMatch = text.match(/```(?:json)?\s*({[\s\S]*?})\s*```/);
+  if (codeMatch) {
+    jsonStr = codeMatch[1];
+  } else {
+    const objMatch = text.match(/\{[\s\S]*\}/);
+    if (objMatch) jsonStr = objMatch[0];
   }
+
+  const parsed = JSON.parse(jsonStr);
+  const events = parsed.events ?? [];
+  const eventsWithTimestamps: VideoEvent[] = events.map((e: any) => ({
+    description: e.description,
+    isDangerous: e.isDangerous,
+    timestamp: '',
+  }));
+
+  return { events: eventsWithTimestamps, rawResponse: text };
 }
